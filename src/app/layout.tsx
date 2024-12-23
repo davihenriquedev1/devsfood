@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { MainProvider } from "@/providers/MainProvider";
+import { Cart } from "@/components/cart/Cart";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,13 +17,14 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-		<body className="antialiased flex min-h-screen ">
+		<body className="antialiased flex min-h-screen bg-[#00980d]">
 			<MainProvider>
 				<Header/>
-				<div>
-					<main className="flex flex-1 min-h-screen">
+				<div className="w-full">
+					<main className="flex p-3 flex-1 min-h-screen bg-[url('/assets/bg.png')]">
 						{children}
 					</main>
+					<Cart/>
 					<Footer/>
 				</div>
 			</MainProvider>
