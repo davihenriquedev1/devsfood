@@ -5,14 +5,19 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { usePathname, useRouter } from "next/navigation";
 import { getCategories } from "@/api/api";
+import { Category } from "@/types/Category";
+import CategoryItem from "@/components/home/CategoryItem";
 
 const Home = () => {
 	const name = useSelector((state: RootState) => state.user.name);
 	const router = useRouter();
     const pathname = usePathname();
 
+	const [headerSearch, setHeaderSearch] = useState('');
+	const [categories, setCategories] = useState<Category[]>([]);
+
 	const [inputActive, setInputActive] = useState(false);
-	const [headerSearch, setHeaderSearch] = useState('')
+	const [activeCategory, setActiveCategory] = useState(0);
 
 	const handleInputFocus = ()=> {
 		setInputActive(true);
@@ -25,9 +30,18 @@ const Home = () => {
 	}
 
 	useEffect(()=> {
-		const categories = async () => await getCategories();
-		console.log(categories);
+		const fetchCategories = async () => {
+			const cat = await getCategories();
+			if(cat.error == '') {
+				setCategories(cat.result);
+			}
+		}
+		fetchCategories()
 	},[]);
+
+	useEffect(()=> {
+
+	},[activeCategory])
 
 	return (
 		<div className="w-full">
@@ -47,7 +61,19 @@ const Home = () => {
 					/>
 				</div>
 			</div>
-			<h1>Welcome to the Home Page, {name}</h1>
+			{categories.length > 0 &&
+				<div className="w-full py-3">
+					<div className="text-white mt-5">
+						<h3>Selecione uma categoria</h3>
+						<ul className="flex gap-2 mt-2">
+							<CategoryItem item={{id:0, name:'Todas as categorias', image:'/assets/food-and-restaurant.png'}} activeCategory={activeCategory} setActiveCategory={setActiveCategory} key={0}/>
+							{categories.map((item)=>(
+								<CategoryItem item={item} key={item.id} activeCategory={activeCategory} setActiveCategory={setActiveCategory}/>
+							))}
+						</ul>
+					</div>
+				</div>
+			}
 		</div>
   	);
 };

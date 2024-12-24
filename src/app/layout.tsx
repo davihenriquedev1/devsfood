@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MainProvider } from "@/providers/MainProvider";
 import { Cart } from "@/components/cart/Cart";
+import { MyTooltip } from "@/components/partials/Tooltip";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,16 +18,18 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-		<body className="antialiased flex min-h-screen bg-[#00980d]">
+		<body className="flex w-full antialiased bg-[#00980d] bg-[url('/assets/bg.png')]">
 			<MainProvider>
 				<Header/>
-				<div className="w-full">
-					<main className="flex p-3 flex-1 min-h-screen bg-[url('/assets/bg.png')]">
+				<main className="flex flex-col w-full min-h-screen">
+					<div className="w-full p-3 min-h-screen flex-1">
 						{children}
-					</main>
+					</div>
 					<Cart/>
 					<Footer/>
-				</div>
+					<MyTooltip id="tip-top" place="top" variant="dark" />
+					<MyTooltip id="tip-right" place="right" variant="dark" />
+				</main>
 			</MainProvider>
 		</body>
 		</html>

@@ -2,10 +2,12 @@ import { MenuItem } from "./MenuItem"
 
 export const Header = ()=> {
     return (
-        <nav className="flex flex-col bg-[#136713] w-20 justify-center items-center">
-            <MenuItem icon="/assets/store.png" link="/"/>
-            <MenuItem icon="/assets/order.png" link="/orders"/>
-            <MenuItem icon="/assets/profile.png" link="/profile"/>
-        </nav>
+        <div className=" bg-[#136713] p-3 flex justify-center items-center min-w-20">
+            <nav className="flex flex-col fixed">
+                <MenuItem title="loja" icon="/assets/store.png" link="/"/>
+                <MenuItem title="pedidos" icon="/assets/order.png" link="/orders"/>
+                <MenuItem title="perfil" icon="/assets/profile.png" link="/profile"/>
+            </nav>
+        </div>
     )
 }
