@@ -4,30 +4,52 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { usePathname, useRouter } from "next/navigation";
-import { getCategories } from "@/api/api";
+import { getCategories, getProducts } from "@/api/api";
 import { Category } from "@/types/Category";
 import CategoryItem from "@/components/home/CategoryItem";
+import { Product } from "@/types/Product";
+
+let searchTimer:any;
 
 const Home = () => {
-	const name = useSelector((state: RootState) => state.user.name);
 	const router = useRouter();
     const pathname = usePathname();
 
 	const [headerSearch, setHeaderSearch] = useState('');
 	const [categories, setCategories] = useState<Category[]>([]);
+	const [products, setProducts] = useState<Product[]>([]);
+	const [totalPages, setTotalPages] = useState(0);
 
-	const [inputActive, setInputActive] = useState(false);
+	const [activeInput, setActiveInput] = useState(false);
 	const [activeCategory, setActiveCategory] = useState(0);
+	const [activePage, setActivePage] = useState(1);
+	const [activeSearch, setActiveSearch] = useState('');
+
+	const fetchProducts = async () => {
+		const prods = await getProducts(activeCategory, activePage, activeSearch);
+		if(prods.error == '') {
+			setProducts(prods.result.data);
+			setTotalPages(prods.result.pages);
+			setActivePage(prods.result.page);
+		}
+	}
 
 	const handleInputFocus = ()=> {
-		setInputActive(true);
+		setActiveInput(true);
 	}
 
 	const handleInputBlur = ()=> {
 		if(!headerSearch) {
-			setInputActive(false);
+			setActiveInput(false);
 		}
 	}
+
+	useEffect(()=> {
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(()=> {
+			setActiveSearch(headerSearch);
+		}, 2000);
+	}, [headerSearch]);
 
 	useEffect(()=> {
 		const fetchCategories = async () => {
@@ -40,22 +62,23 @@ const Home = () => {
 	},[]);
 
 	useEffect(()=> {
-
-	},[activeCategory])
+		setProducts([]);
+		fetchProducts();
+	},[activeCategory, activePage, activeSearch])
 
 	return (
 		<div className="w-full">
 			<div className="bg-[#136713] rounded-md p-6 flex justify-between items-center">
 				<img src="/assets/logo.png" alt="logo" className="w-auto h-16"/>
 				<div
-					className={`bg-white p-2 flex gap-2 items-center rounded-3xl ${!inputActive ? 'gap-0' : ''}`}
+					className={`bg-white p-2 flex items-center rounded-3xl ${!activeInput ? 'gap-0' : 'gap-2 '}`}
 					onMouseEnter={handleInputFocus}
 					onMouseLeave={handleInputBlur}>
 					<img src="/assets/search.png" alt="search image" className="size-7"/>
 					<input
 						type="text"
 						placeholder="digite um produto"
-						className={`border-0 outline-none transition-all duration-500 ${inputActive ? 'w-72' : 'w-0 h-0 p-0 m-0'}`}
+						className={`border-0 outline-none transition-all duration-500 ${activeInput ? 'w-72' : 'w-0'}`}
 						value={headerSearch}
 						onChange={(e) => setHeaderSearch(e.target.value)}
 					/>
@@ -72,6 +95,40 @@ const Home = () => {
 							))}
 						</ul>
 					</div>
+				</div>
+			}
+			{products.length > 0 &&
+				<div className="my-6 ">
+					<ul className="grid grid-cols-3 gap-5 text-[#136713]">
+						{products.map((item, index)=> (
+							<li className="bg-white rounded-sm shadow-sm shadow-black p-4 flex items-center cursor-pointer" key={index}>
+								<div className="w-24">
+									<img src={item.image} alt={item.name} className="w-full"/>
+								</div>
+								<div className="flex flex-col flex-1 ml-2 mr-2">
+									<span className="text-xl font-bold">{item.name}</span>
+									<span className="text-sm">R$ {item.price}</span>
+									<span className="text-xs">{item.ingredients}</span>
+								</div>
+								<button type="button" title="next">
+									<img src="/assets/next.png" alt="next" className="w-3"/>
+								</button>
+							</li>
+						))}
+					</ul>
+				</div>
+			}
+
+			{totalPages > 0 &&
+				<div className="flex flex-wrap gap-4 items-center justify-center">
+					{Array(totalPages).fill(0).map((item, index) => (
+						<div 
+							key={index} 
+							className={`rounded-sm shadow-sm shadow-black my-4 px-2 py-1 cursor-pointer ${(activePage === index + 1) ? 'bg-[#CCC]' : 'bg-white'}`} 
+							onClick={()=> setActivePage(index+1)}>
+							{index + 1}
+						</div>
+					))}
 				</div>
 			}
 		</div>

@@ -18,12 +18,22 @@ export const getCategories = async () => {
     }
 };
 
-export const getResource = async (resourceId: string) => {
+export const getProducts = async (category:number, page:number, search:string) => {
+    let filters : Record<string, string>={};
+
+    if(category > 0 ) filters["category"] = category.toString();
+    if(page > 0) filters["page"] = page.toString();
+    if(search) filters["search"] = search;
+
+    let queryString = new URLSearchParams(filters).toString();
+
+    console.log(queryString);
+
     try {
-        const response = await api.get(`/resource/${resourceId}`);
+        const response = await api.get(`/products?${queryString}`);
         return response.data;
     } catch (error) {
-        console.error('Erro ao buscar o recurso:', error);
+        console.error('Erro ao buscar os produtos:', error);
         throw error;
     }
 };
