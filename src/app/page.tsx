@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import { usePathname, useRouter } from "next/navigation";
 import { getCategories, getProducts } from "@/api/api";
 import { Category } from "@/types/Category";
 import CategoryItem from "@/components/home/CategoryItem";
 import { Product } from "@/types/Product";
+import { Modal } from "@/components/Modal";
 
 let searchTimer:any;
 
@@ -19,11 +18,13 @@ const Home = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [products, setProducts] = useState<Product[]>([]);
 	const [totalPages, setTotalPages] = useState(0);
+	const [modalData, setModalData] = useState<Product>();
 
 	const [activeInput, setActiveInput] = useState(false);
 	const [activeCategory, setActiveCategory] = useState(0);
 	const [activePage, setActivePage] = useState(1);
 	const [activeSearch, setActiveSearch] = useState('');
+	const [activeModal, setActiveModal] = useState(false);
 
 	const fetchProducts = async () => {
 		const prods = await getProducts(activeCategory, activePage, activeSearch);
@@ -66,6 +67,11 @@ const Home = () => {
 		fetchProducts();
 	},[activeCategory, activePage, activeSearch])
 
+	const handleProductClick = (data:Product) => {
+		setModalData(data);
+		setActiveModal(true);
+	}
+
 	return (
 		<div className="w-full">
 			<div className="bg-[#136713] rounded-md p-6 flex justify-between items-center">
@@ -101,7 +107,7 @@ const Home = () => {
 				<div className="my-6 ">
 					<ul className="grid grid-cols-3 gap-5 text-[#136713]">
 						{products.map((item, index)=> (
-							<li className="bg-white rounded-sm shadow-sm shadow-black p-4 flex items-center cursor-pointer" key={index}>
+							<li className="bg-white rounded-sm shadow-sm shadow-black p-4 flex items-center cursor-pointer" key={index} onClick={()=>handleProductClick(item)}>
 								<div className="w-24">
 									<img src={item.image} alt={item.name} className="w-full"/>
 								</div>
@@ -130,6 +136,9 @@ const Home = () => {
 						</div>
 					))}
 				</div>
+			}
+			{modalData &&
+				<Modal active={activeModal} setStatus={setActiveModal} data={modalData}/>
 			}
 		</div>
   	);

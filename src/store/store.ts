@@ -4,15 +4,17 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import userReducer from '@/reducers/userReducer';
+import cartReducer from '@/reducers/cartReducer';
 
 const rootReducer = combineReducers({
   user: userReducer,
+  cart: cartReducer
 });
 
 const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist:['user']
+	key: 'root',
+	storage,
+	whitelist:['user', 'cart'] //permite salvar no persistor
 };
 
 // Configuração do Redux Persist com persistReducer
