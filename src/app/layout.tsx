@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-		<body className="flex w-full antialiased bg-[#00980d] bg-[url('/assets/bg.png')]">
+		<html lang="en" >
+		<body className="flex w-full antialiased bg-[#00980d] bg-[url('/assets/bg.png')]" suppressHydrationWarning={true} >
 			<MainProvider>
 				<Header/>
 				<main className="flex flex-col w-full min-h-screen">
